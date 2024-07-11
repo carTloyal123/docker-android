@@ -80,7 +80,6 @@ def start_device() -> None:
     selected_device.install_app()
     selected_device.keep_alive()
 
-
 def start_display_screen() -> None:
     cmd = "/usr/bin/Xvfb"
     args = f"{os.getenv(ENV.DISPLAY)} " \

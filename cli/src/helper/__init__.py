@@ -1,5 +1,6 @@
 import logging
 import os
+import requests
 
 logger = logging.getLogger("helper")
 
@@ -77,7 +78,7 @@ def get_latest_artifact(owner, repo, save_path) -> str:
         raise Exception(f"Failed to fetch the latest release: {response.status_code}, {response.text}")
     
     latest_release = response.json()
-    print(f"Latest release: {latest_release['tag_name']}")
+    logger.info(f"Latest release: {latest_release['tag_name']}")
     
     # Find the asset
     assets = latest_release['assets']
@@ -89,7 +90,7 @@ def get_latest_artifact(owner, repo, save_path) -> str:
     download_url = asset['browser_download_url']
     file_name = asset['name']
     
-    print(f"Downloading {file_name} from {download_url}")
+    logger.info(f"Downloading {file_name} from {download_url}")
     download_response = requests.get(download_url, headers=headers)
     
     if download_response.status_code != 200:
@@ -100,5 +101,5 @@ def get_latest_artifact(owner, repo, save_path) -> str:
     with open(full_file_path, 'wb') as file:
         file.write(download_response.content)
     
-    print(f"Downloaded {file_name} successfully")
+    logger.info(f"Downloaded {file_name} successfully")
     return file_name

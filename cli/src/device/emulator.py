@@ -6,7 +6,7 @@ import time
 from enum import Enum
 
 from src.device import Device, DeviceType
-from src.helper import convert_str_to_bool, get_env_value_or_raise, symlink_force
+from src.helper import convert_str_to_bool, get_env_value_or_raise, symlink_force, get_latest_artifact
 from src.constants import ENV, UTF8
 
 
@@ -135,12 +135,22 @@ class Emulator(Device):
             self.logger.info(f"{self.device_type} is created!")
 
     def change_permission(self) -> None:
+        self.logger.info("Changing permission for KVM...")
         kvm_path = "/dev/kvm"
         if os.path.exists(kvm_path):
             cmds = (f"sudo chown 1300:1301 {kvm_path}",
                     "sudo sed -i '1d' /etc/passwd")
             for c in cmds:
-                subprocess.check_call(c, shell=True)
+                try:
+                    subprocess.check_call(c, shell=True)
+                except subprocess.CalledProcessError as e:
+                    self.logger.error(f"Error in changing permission for command: {c}")
+                    self.logger.error(e)
+                    raise RuntimeError("Error in changing permission for KVM!")
+                except Exception as e:
+                    self.logger.error(f"Error in changing permission for command: {c}")
+                    self.logger.error(e)
+                    raise RuntimeError("Error in changing permission for KVM!")
             self.logger.info("KVM permission is granted!")
         else:
             raise RuntimeError("/dev/kvm cannot be found!")
@@ -238,13 +248,13 @@ class Emulator(Device):
         app_path = os.path.join(self.path_app_download, file_name)
         install_cmd = f"adb install -r {app_path}"
         self.logger.info(f"Installing app from {app_path}")
-        check_adb_command(self.ReadinessCheck.BOOTED, install_cmd, "success", 60, self.interval_waiting)
+        self.check_adb_command(self.ReadinessCheck.BOOTED, install_cmd, "success", 60, self.interval_waiting)
         self.logger.info(f"App is installed!")
         
         ## Run App once it is installed
         run_app_cmd = f"adb shell monkey -p com.tencentcs.iotvideo -v 1"
         self.logger.info("Running start command!")
-        check_adb_command(self.ReadinessCheck.BOOTED, run_app_cmd, "finished", 60, self.interval_waiting)
+        self.check_adb_command(self.ReadinessCheck.BOOTED, run_app_cmd, "finished", 60, self.interval_waiting)
         self.logger.info(f"Cryze App is running!!!!")
 
     def __repr__(self) -> str:

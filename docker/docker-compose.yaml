@@ -1,31 +1,13 @@
 services:
-  base:
-    image: cartloyal123/docker-android:base_v1.0.0
-    container_name: cryze-docker-android-base
-    ports:
-      - "6080:6080"
-      - "3030:3030"
-    environment:
-      - EMULATOR_DEVICE=Samsung Galaxy S10
-      - WEB_VNC=true
-    devices:
-      - /dev/kvm:/dev/kvm
-    command: tail -f /dev/null
-    privileged: true
-
   emulator:
-    image: cartloyal123/docker-android:emulator_11.0_v1.0.0
-    container_name: cryze-docker-android-emulator-11
+    image: cartloyal123/docker-android:emulator_14.0_v1.0.1
+    container_name: cryze-docker-android-emulator-14
     ports:
       - "6080:6080"
       - "3030:3030"
-    volumes:
-      - D:\Documents\cryze\cryze:/home/androidusr/cryze:rw
     environment:
       - EMULATOR_DEVICE=Samsung Galaxy S10
       - WEB_VNC=true
     devices:
       - /dev/kvm:/dev/kvm
-    command: tail -f /dev/null
-    entrypoint: tail -f /dev/null
     privileged: true
