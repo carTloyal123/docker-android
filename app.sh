@@ -39,11 +39,11 @@ TAG_NAME=""
 if [[ "${p}" == "pro"* ]]; then
     IFS='-' read -ra arr <<<"${p}"
     FOLDER_PATH+="docker/${arr[0]}/${arr[1]}"
-    IMAGE_NAME+="budtmo2/docker-android-${arr[0]}"
+    IMAGE_NAME+="cartloyal123/docker-android-pro-${arr[0]}"
     TAG_NAME+="${arr[1]}"
 else
     FOLDER_PATH+="docker/${p}"
-    IMAGE_NAME+="budtmo/docker-android"
+    IMAGE_NAME+="cartloyal123/docker-android"
     TAG_NAME+="${p}"
 fi
 
@@ -87,6 +87,7 @@ function build() {
     fi
 
     cmd+="-f ${FOLDER_PATH} ."
+    echo "Running full docker command: ${cmd}"
     ${cmd}
     docker tag ${IMAGE_NAME_SPECIFIC_RELEASE} ${IMAGE_NAME_LATEST}
 

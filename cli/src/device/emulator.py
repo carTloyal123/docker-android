@@ -70,6 +70,7 @@ class Emulator(Device):
                                                    "configs", "devices", "profiles")
         self.path_emulator_skins = os.path.join(workdir, "docker-android", "mixins",
                                                 "configs", "devices", "skins")
+        self.path_app_download = os.path.join(workdir, "app_tmp")
         self.file_name = self.device.replace(" ", "_").lower()
         self.no_skin = convert_str_to_bool(os.getenv(ENV.EMULATOR_NO_SKIN))
         self.interval_after_booting = 15
@@ -223,6 +224,28 @@ class Emulator(Device):
 
     def tear_down(self, *args) -> None:
         self.logger.warning("Sigterm is detected! Nothing to do!")
+
+    def install_app(self) -> None:
+        super().install_app()
+        self.logger.info(f"Installing the Cryze App...")
+        app_github_repo = "cryze-android"
+        app_owner = "carTloyal123"
+        self.logger.info(f"Downloading the latest release of {app_github_repo} to {self.path_app_download}")
+        if os.path.exists(self.path_app_download):
+            os.system(f"rm -rf {self.path_app_download}")
+        os.makedirs(self.path_app_download, exist_ok=True)
+        file_name = get_latest_artifact(app_owner, app_github_repo, self.path_app_download)
+        app_path = os.path.join(self.path_app_download, file_name)
+        install_cmd = f"adb install -r {app_path}"
+        self.logger.info(f"Installing app from {app_path}")
+        check_adb_command(self.ReadinessCheck.BOOTED, install_cmd, "success", 60, self.interval_waiting)
+        self.logger.info(f"App is installed!")
+        
+        ## Run App once it is installed
+        run_app_cmd = f"adb shell monkey -p com.tencentcs.iotvideo -v 1"
+        self.logger.info("Running start command!")
+        check_adb_command(self.ReadinessCheck.BOOTED, run_app_cmd, "finished", 60, self.interval_waiting)
+        self.logger.info(f"Cryze App is running!!!!")
 
     def __repr__(self) -> str:
         try:

@@ -77,6 +77,7 @@ def start_device() -> None:
     selected_device.start()
     selected_device.wait_until_ready()
     selected_device.reconfigure()
+    selected_device.install_app()
     selected_device.keep_alive()
 
 

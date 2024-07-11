@@ -1,5 +1,5 @@
 ARG DOCKER_ANDROID_VERSION
-FROM budtmo/docker-android:base_${DOCKER_ANDROID_VERSION}
+FROM cartloyal123/docker-android:base_${DOCKER_ANDROID_VERSION}
 
 #==================
 # Android Packages

@@ -118,6 +118,9 @@ class Device(ABC):
     def reconfigure(self) -> None:
         self.set_status(DEVICE.STATUS_RECONFIGURING)
 
+    def install_app(self) -> None:
+        self.set_status(DEVICE.STATUS_INSTALLING)
+
     def keep_alive(self) -> None:
         self.set_status(DEVICE.STATUS_READY)
         self.logger.warning(f"{self.device_type} process will be kept alive to be able to get sigterm signal...")
